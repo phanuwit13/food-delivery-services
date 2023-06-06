@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  # Database
+  db:
+    build:
+      context: .
+      dockerfile: postgres.dockerfile
+    image: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+    ports:
+        - '5432:5432'    
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+    networks:
+      - pgsite
+  
+  # pgadmin4
+  pg4:
+    depends_on:
+      - db
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'admin@admin.com'
+      PGADMIN_DEFAULT_PASSWORD: 'password'
+    networks:
+      - pgsite
+
+networks:
+  pgsite:
+
+volumes:
+  db_data:
